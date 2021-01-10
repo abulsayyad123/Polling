@@ -1,32 +1,54 @@
-defmodule PollerDal.Choices.Choice do
-  use Ecto.Schema
-  import Ecto.Changeset
+defmodule PollerDal.Choices do
+  import Ecto.Query
+  alias PollerDal.Repo
 
+  alias PollerDal.Choices.Choice
 
-  schema "choices" do
-    field(:description, :string)
-    field(:votes, :integer)
-    field(:party, :integer)
-    belongs_to(:question, PollerDal.Questions.Question)
-
-    timestamps()
+  def list_choices do
+    Repo.all(Choice)
   end
 
-  def changeset(choice, attrs) do
+  def list_choices_by_question_id(question_id) do
+    from(
+      c in Choice,
+      where: c.question_id == ^question_id
+    )
+    |> Repo.all()
+  end
+
+  def list_choices_by_choice_ids(choice_ids) do
+    from(
+      c in Choice,
+      where: c.id in ^choice_ids
+    )
+    |> Repo.all()
+  end
+
+  def get_choice!(id) do
+    Repo.get!(Choice, id)
+  end
+
+  def create_choice(attrs) do
+    %Choice{}
+    |> Choice.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_choice(%Choice{} = choice, attrs) do
     choice
-    |> cast(attrs, [:description, :votes, :party, :question_id])
-    |> validate_required([:description, :party, :question_id])
-    |> validate_inclusion(:party, @party_ids)
-    |> assoc_constraint(:question)
+    |> Choice.changeset(attrs)
+    |> Repo.update()
   end
 
-  def parties(), do: @parties
-  def party_ids(), do: @party_ids
-
-  def party_description(id) do
-    case Enum.find(@parties, fn {_, party_id} -> party_id == id end) do
-      nil -> ""
-      {description, _} -> description
-    end
+  def delete_choice(%Choice{} = choice) do
+    Repo.delete(choice)
   end
+
+  def change_choice(%Choice{} = choice) do
+    Choice.changeset(choice, %{})
+  end
+
+  defdelegate parties, to: Choice
+  defdelegate party_ids, to: Choice
+  defdelegate party_description(id), to: Choice
 end

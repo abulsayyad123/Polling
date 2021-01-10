@@ -30,4 +30,8 @@ defmodule PollerDal.Questions do
   def list_questions, do: Repo.all(Question)
 
   def get_question!(id), do: Repo.get!(Question, id)
+
+  def change_question(%Question{} = question) do
+    Question.changeset(question, %{})
+  end
 end
