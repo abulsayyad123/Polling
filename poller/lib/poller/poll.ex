@@ -29,6 +29,13 @@ defmodule Poller.Poll do
     |> Enum.into(votes)
   end
 
+  def add_questions(poll, []), do: poll
+
+  # def add_questions(poll, question) do
+
+
+  # end
+
   def vote(poll, choice_id) do
     do_vote(poll, choice_id, Map.has_key?(poll.votes, choice_id))
   end

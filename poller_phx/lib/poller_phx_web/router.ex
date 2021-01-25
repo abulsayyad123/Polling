@@ -12,6 +12,8 @@ defmodule PollerPhxWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug PollerPhxWeb.Plugs.Auth
   end
 
   scope "/", PollerPhxWeb do
@@ -45,5 +47,11 @@ defmodule PollerPhxWeb.Router do
 
     get "/districts/:district_id/questions", QuestionController, :index
     get "/districts/:district_id/questions/:question_id/choices", ChoiceController, :index
+  end
+
+  scope "/api", PollerPhxWeb.Api do
+    pipe_through [:api, :valid_user, :admin_user]
+
+    put "/districts/:district_id/choices/choice_id", ChoiceController, :vote
   end
 end

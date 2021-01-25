@@ -16,6 +16,11 @@ defmodule PollerDal.Choices do
     |> Repo.all()
   end
 
+  def test_join_query() do
+    from c in "choices", join: q in "questions", where: c.question_id == q.id
+    |> Repo.all
+  end
+
   def list_choices_by_choice_ids(choice_ids) do
     from(
       c in Choice,
